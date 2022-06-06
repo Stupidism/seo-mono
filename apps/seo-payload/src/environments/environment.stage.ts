@@ -2,7 +2,7 @@ import { sharedEnvironment } from './sharedEnvironment';
 
 export const environment = {
   production: true,
-  deployEnv: 'prod',
+  deployEnv: 'stage',
   payload: {
     ...sharedEnvironment.payload,
     mongoUrl: 'mongodb://localhost/seo-payload',

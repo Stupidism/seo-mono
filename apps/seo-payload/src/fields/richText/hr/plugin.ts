@@ -1,4 +1,8 @@
-const withHR = (incomingEditor) => {
+import { RichTextCustomElement } from 'payload/dist/fields/config/types';
+
+const withHR: NonNullable<RichTextCustomElement['plugins']>[number] = (
+  incomingEditor
+) => {
   const editor = incomingEditor;
   const { isVoid } = editor;
 

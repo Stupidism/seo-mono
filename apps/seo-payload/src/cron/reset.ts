@@ -17,6 +17,7 @@ import { buildWebsiteData } from '../data/posts/buildWebsiteData';
 import { introducingPayloadData } from '../data/posts/introducingPayloadData';
 import { futurePostData } from '../data/posts/futurePostData'
 import { mainMenuData } from '../data/mainMenu/mainMenuData';
+import { environment } from '../environments/environment';
 
 export async function reset() {
   try {
@@ -37,8 +38,8 @@ export async function reset() {
 }
 
 async function dropDB() {
-  const client = await MongoClient.connect(process.env.MONGO_URL);
-  const db = client.db(new URL(process.env.MONGO_URL).pathname.substring(1));
+  const client = await MongoClient.connect(environment.payload.mongoUrl);
+  const db = client.db(new URL(environment.payload.mongoUrl).pathname.substring(1));
   await db.dropDatabase();
 }
 
@@ -51,13 +52,14 @@ async function seedData() {
       password: 'demo',
     },
   });
+  console.log(path.resolve(__dirname, './assets/payload.jpg'));
 
   const { id: imageId } = await payload.create<any>({
     collection: 'media',
     data: {
       alt: 'Payload',
     },
-    filePath: path.resolve(__dirname, './payload.jpg'),
+    filePath: path.resolve(__dirname, './assets/payload.jpg'),
   });
 
   // Page - Home

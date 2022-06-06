@@ -1,7 +1,9 @@
 import express from 'express';
 import payload from 'payload';
+
 import { reset } from './cron/reset';
 import { resetScheduledJob } from './cron/jobs';
+import { environment } from './environments/environment';
 
 const app = express();
 
@@ -12,11 +14,13 @@ app.get('/', function (_, res) {
 
 // Initialize Payload
 payload.init({
-  secret: process.env.PAYLOAD_SECRET_KEY,
-  mongoURL: process.env.MONGO_URL,
+  secret: environment.payload.secretKey,
+  mongoURL: environment.payload.mongoUrl,
   express: app,
   onInit: async () => {
-    payload.logger.info(`Payload Admin URL: ${payload.getAdminURL()}`);
+    payload.logger.info(
+      `Payload Admin URL: ${environment.payload.publicServerUrl}`
+    );
 
     // Clear and reset database on server start
     // NOTE - this is only for demo purposes and should not be used
@@ -28,4 +32,4 @@ payload.init({
 // Seed database with startup data
 resetScheduledJob.start();
 
-app.listen(3000);
+app.listen(environment.port);

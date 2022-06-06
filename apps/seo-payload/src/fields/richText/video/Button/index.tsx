@@ -6,6 +6,8 @@ import { ReactEditor, useSlate } from 'slate-react';
 import { ElementButton } from 'payload/components/rich-text';
 import { Form, Select, Text, Submit } from 'payload/components/forms';
 import { MinimalTemplate, Button, X } from 'payload/components';
+import { Fields, Data } from 'payload/dist/admin/components/forms/Form/types';
+
 import VideoIcon from '../Icon';
 
 import './index.scss';
@@ -27,16 +29,19 @@ const sources = [
 
 const baseClass = 'video-rich-text-button';
 
-const insertVideo = (editor, { id, source }) => {
+type VideoData = {
+  id: string;
+  source: string;
+};
+
+const insertVideo = (editor: ReactEditor, { id, source }: VideoData) => {
   const text = { text: ' ' };
 
   const video = {
     type: 'video',
     id,
     source,
-    children: [
-      text,
-    ],
+    children: [text],
   };
 
   const nodes = [video, { type: 'p', children: [{ text: '' }] }];
@@ -49,17 +54,20 @@ const insertVideo = (editor, { id, source }) => {
   ReactEditor.focus(editor);
 };
 
-const VideoButton: React.FC<{path: string}> = ({ path }) => {
+const VideoButton: React.FC<{ path: string }> = ({ path }) => {
   const { open, closeAll } = useModal();
   const editor = useSlate();
   const [renderModal, setRenderModal] = useState(false);
   const modalSlug = `${path}-add-video`;
 
-  const handleAddVideo = useCallback((_, { id, source }) => {
-    insertVideo(editor, { id, source });
-    closeAll();
-    setRenderModal(false);
-  }, [editor, closeAll]);
+  const handleAddVideo = useCallback(
+    (_: Fields, { id, source }: Data) => {
+      insertVideo(editor as ReactEditor, { id, source });
+      closeAll();
+      setRenderModal(false);
+    },
+    [editor, closeAll]
+  );
 
   useEffect(() => {
     if (renderModal) {
@@ -77,10 +85,7 @@ const VideoButton: React.FC<{path: string}> = ({ path }) => {
         <VideoIcon />
       </ElementButton>
       {renderModal && (
-        <Modal
-          slug={modalSlug}
-          className={`${baseClass}__modal`}
-        >
+        <Modal slug={modalSlug} className={`${baseClass}__modal`}>
           <MinimalTemplate>
             <header className={`${baseClass}__header`}>
               <h3>Add Video</h3>
@@ -94,24 +99,15 @@ const VideoButton: React.FC<{path: string}> = ({ path }) => {
                 <X />
               </Button>
             </header>
-            <Form
-              onSubmit={handleAddVideo}
-              initialData={initialFormData}
-            >
+            <Form onSubmit={handleAddVideo} initialData={initialFormData}>
               <Select
                 required
                 label="Video Source"
                 options={sources}
                 name="source"
               />
-              <Text
-                label="ID"
-                required
-                name="id"
-              />
-              <Submit>
-                Add video
-              </Submit>
+              <Text label="ID" required name="id" />
+              <Submit>Add video</Submit>
             </Form>
           </MinimalTemplate>
         </Modal>

@@ -5,12 +5,7 @@ import { MenuLink } from '../blocks/MenuLink';
 import { MenuTitle } from '../blocks/MenuTitle';
 import link from '../fields/link';
 
-const menuColumnBlocks = [
-  MenuTitle,
-  MenuLink,
-  MenuDescription,
-  MenuFeature,
-];
+const menuColumnBlocks = [MenuTitle, MenuLink, MenuDescription, MenuFeature];
 
 const MainMenu: GlobalConfig = {
   slug: 'mainMenu',
@@ -71,7 +66,8 @@ const MainMenu: GlobalConfig = {
           disableLabel: true,
           overrides: {
             admin: {
-              condition: (_, { type }) => type === 'link',
+              condition: (_: unknown, { type }: { type: string }) =>
+                type === 'link',
             },
           },
         }),

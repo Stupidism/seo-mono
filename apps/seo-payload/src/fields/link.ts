@@ -1,7 +1,11 @@
 import { Field } from 'payload/types';
+import { Option } from 'payload/dist/fields/config/types';
 import deepMerge from '../utilities/deepMerge';
 
-export const appearanceOptions = {
+export const appearanceOptions: Record<
+  'text' | 'primaryButton' | 'secondaryButton',
+  Option
+> = {
   text: {
     label: 'Text',
     value: 'text',
@@ -16,13 +20,11 @@ export const appearanceOptions = {
   },
 };
 
-type LinkType = (
-  options?: {
-    appearances?: string[] | false,
-    disableLabel?: boolean,
-    overrides?: Record<string, unknown>
-  }
-) => Field;
+type LinkType = (options?: {
+  appearances?: string[] | false;
+  disableLabel?: boolean;
+  overrides?: Record<string, unknown>;
+}) => Field;
 
 const link: LinkType = ({
   appearances,
@@ -35,25 +37,26 @@ const link: LinkType = ({
     admin: {
       hideGutter: true,
     },
-    fields: [{
-      name: 'type',
-      type: 'radio',
-      options: [
-        {
-          label: 'Internal link',
-          value: 'reference',
+    fields: [
+      {
+        name: 'type',
+        type: 'radio',
+        options: [
+          {
+            label: 'Internal link',
+            value: 'reference',
+          },
+          {
+            label: 'Custom URL',
+            value: 'custom',
+          },
+        ],
+        defaultValue: 'reference',
+        admin: {
+          layout: 'horizontal',
+          width: '50%',
         },
-        {
-          label: 'Custom URL',
-          value: 'custom',
-        },
-      ],
-      defaultValue: 'reference',
-      admin: {
-        layout: 'horizontal',
-        width: '50%',
       },
-    },
     ],
   };
 
@@ -68,7 +71,7 @@ const link: LinkType = ({
         required: true,
         maxDepth: 1,
         admin: {
-          condition: (_, siblingData) => siblingData?.type === 'reference',
+          condition: (_, siblingData) => siblingData?.['type'] === 'reference',
         },
       },
       {
@@ -77,27 +80,29 @@ const link: LinkType = ({
         type: 'text',
         required: true,
         admin: {
-          condition: (_, siblingData) => siblingData?.type === 'custom',
+          condition: (_, siblingData) => siblingData?.['type'] === 'custom',
         },
       },
     ],
   };
 
   if (!disableLabel) {
-    linkOptions.fields.unshift(
-      {
-        name: 'label',
-        label: 'Label',
-        type: 'text',
-        required: true,
-        admin: {
-          width: '50%',
-        },
+    linkOptions.fields.unshift({
+      name: 'label',
+      label: 'Label',
+      type: 'text',
+      required: true,
+      admin: {
+        width: '50%',
       },
-    );
+    });
 
-    linkOptions.fields[1].admin.width = '50%';
-    linkOptions.fields[2].admin.width = '50%';
+    if (linkOptions.fields[1].admin) {
+      linkOptions.fields[1].admin.width = '50%';
+    }
+    if (linkOptions.fields[2].admin) {
+      linkOptions.fields[2].admin.width = '50%';
+    }
     generatedLink.fields.push(linkOptions);
   } else {
     generatedLink.fields.push(linkOptions);
@@ -129,7 +134,10 @@ const link: LinkType = ({
       name: 'appearance',
       type: 'select',
       defaultValue: appearances[0],
-      options: appearances.map((appearance) => appearanceOptions[appearance]),
+      options: appearances.map(
+        (appearance) =>
+          appearanceOptions[appearance as keyof typeof appearanceOptions]
+      ),
     });
   }
 

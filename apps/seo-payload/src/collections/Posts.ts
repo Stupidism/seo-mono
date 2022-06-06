@@ -11,17 +11,10 @@ const Posts: CollectionConfig = {
     // this is the name of a field which will be visible for the edit screen and is also used for relationship fields
     useAsTitle: 'title',
     // defaultColumns is used on the listing screen in the admin UI for the collection
-    defaultColumns: [
-      'title',
-      'category',
-      'publishDate',
-      'tags',
-      'status'
-    ],
+    defaultColumns: ['title', 'category', 'publishDate', 'tags', 'status'],
   },
   access: {
     read: ({ req: { user } }) => {
-
       // users who are authenticated will see all posts
       if (user) {
         return true;
@@ -43,22 +36,22 @@ const Posts: CollectionConfig = {
     },
   },
   // versioning with drafts enabled tells Payload to save documents to a separate collection in the database and allow publishing
-	versions: {
-		drafts: true,
-	},
+  versions: {
+    drafts: true,
+  },
   fields: [
     {
       name: 'title',
       type: 'text',
       // localized fields are stored as keyed objects to represent each locale listed in the payload.config.ts. For example: { en: 'English', es: 'Espanol', ...etc }
-			localized: true,
+      localized: true,
     },
     {
       name: 'author',
       type: 'relationship',
       relationTo: 'users',
       // defaultValues can use functions to return data to populate the create form and also when making POST requests the server will use the value or function to fill in any undefined fields before validation occurs
-      defaultValue: ({ user }) => (user.id),
+      defaultValue: ({ user }: { user: { id: string } }) => user.id,
     },
     {
       name: 'publishDate',
@@ -67,7 +60,7 @@ const Posts: CollectionConfig = {
         position: 'sidebar',
         description: 'Posts will not be public until this date',
       },
-      defaultValue: () => (new Date()),
+      defaultValue: () => new Date(),
     },
     {
       name: 'category',
@@ -78,7 +71,7 @@ const Posts: CollectionConfig = {
         archived: { equals: false },
       },
       // allow selection of one or more categories
-			hasMany: true,
+      hasMany: true,
     },
     {
       name: 'layout',
@@ -86,15 +79,9 @@ const Posts: CollectionConfig = {
       type: 'blocks',
       minRows: 1,
       // the blocks are reusable objects that will be added in array to the document, these are especially useful for structuring content purpose built for frontend componentry
-      blocks: [
-        Content,
-        Media,
-        MediaContent,
-        MediaSlider,
-      ],
+      blocks: [Content, Media, MediaContent, MediaSlider],
     },
-
   ],
-}
+};
 
 export default Posts;

@@ -3,8 +3,8 @@
  * @param item
  * @returns {boolean}
  */
-export function isObject(item: unknown): boolean {
-  return (item && typeof item === 'object' && !Array.isArray(item));
+export function isObject(item: unknown): item is Record<string, unknown> {
+  return !!item && typeof item === 'object' && !Array.isArray(item);
 }
 
 /**
@@ -12,17 +12,26 @@ export function isObject(item: unknown): boolean {
  * @param target
  * @param ...sources
  */
-export default function deepMerge<T, R>(target: T, source: R): T {
+export default function deepMerge<T, R>(target: T, source?: R): T {
+  if (source == null) return target;
   const output = { ...target };
   if (isObject(target) && isObject(source)) {
     Object.keys(source).forEach((key) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       if (isObject(source[key])) {
         if (!(key in target)) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           Object.assign(output, { [key]: source[key] });
         } else {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           output[key] = deepMerge(target[key], source[key]);
         }
       } else {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         Object.assign(output, { [key]: source[key] });
       }
     });
