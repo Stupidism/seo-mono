@@ -10,7 +10,7 @@ const app = express();
 
 payload.init({
   secret: 'SECRET_KEY',
-  mongoURL: 'mongodb://localhost/payload',
+  mongoURL: process.env.MONGO_URL || 'mongodb://localhost/payload',
   express: app,
 });
 
